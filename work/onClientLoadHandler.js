@@ -9,10 +9,10 @@ let datasetId = 'openaq';
 let tableName = 'global_air_quality';
 
 let map;
-let drawingManager;
 let heatmap;
+let drawingManager;
 let jobCheckTimer;
-let recordLimit = 10;
+let recordLimit = 1000;
 
 let config = {
     'client_id': clientId,
@@ -91,6 +91,7 @@ function onClientLoad() {
       'projectId': gcpProjectId,
       'jobId': jobId
     });
+    console.log(jobId);
     request.execute(response => doHeatMap(response.result.rows))
   }
   // Init map
@@ -289,38 +290,44 @@ function onClientLoad() {
       }
     });
     drawingManager.setMap(map);
+
     // Handle the drawing events.
     drawingManager.addListener('rectanglecomplete', rectangle => {
       //show an animation to indicate that something is happening.
-      fadeToggle(document.getElementById('spinner'));
+      // fadeToggle(document.getElementById('spinner'));
       gapi.auth.authorize(config, function() {
         rectangleQuery(rectangle.getBounds());
       });
-      // rectangleQuery(rectangle.getBounds());
     });
     drawingManager.addListener('circlecomplete', circle => {
       //show an animation to indicate that something is happening.
-      fadeToggle(document.getElementById('spinner'));
+      // fadeToggle(document.getElementById('spinner'));
       gapi.auth.authorize(config, function() {
         circleQuery(circle);
       });
-      // circleQuery(circle);
     });
-    drawingManager.addListener('polygoncomplete', polygon => {
-      let path = polygon.getPath().getArray();
-      // var path = polygon.getPaths().getAt(0).getArray();
-      let queryPolygon = path.map(element => {
+    drawingManager.addListener('polygoncomplete', function (polygon) {
+      let path = polygon.getPaths().getAt(0).getArray();
+      let queryPolygon = path.map(function(element) {
         return [element.lng(), element.lat()];
       });
-      // let queryPolygon = path.map(function(element) {
-      //     return [element.lng(), element.lat()];
-      // });
       //show an animation to indicate that something is happening.
-      fadeToggle(document.getElementById('spinner'));
+      // fadeToggle(document.getElementById('spinner'));
       gapi.auth.authorize(config, function() {
         polygonQuery(queryPolygon);
-      });
+        });
     });
+    // drawingManager.addListener('polygoncomplete', polygon => {
+    //   let path = polygon.getPath().getArray(0);
+    //   let queryPolygon = path.map(element => {
+    //     return [element.lng(), element.lat()];
+    //   });
+    //   //show an animation to indicate that something is happening.
+    //   fadeToggle(document.getElementById('spinner'));
+    //   gapi.auth.authorize(config, function() {
+    //     polygonQuery(queryPolygon);
+    //   });
+    // });
   }
 
   // Query related functions:
@@ -427,27 +434,57 @@ function onClientLoad() {
     return queryString;
   }
 
-  // Helper functions
-  // Show query results as a Heatmap.
+  // Helper: shows query results as a Heatmap.
   function doHeatMap(rows){
-    let latCol = 2;
-    let lngCol = 3;
-    let heatmapData = [];
+    let latCol = 0;
+    let lngCol = 1;
+    let heatMapData = [];
+
     if (heatmap!=null){
-      heatmap.setMap(null);
+        heatmap.setMap(null);
+      }
+
+    if (rows!=null){
+      for (let i = 0; i < rows.length; i++) {
+        let f = rows[i].f;
+        console.log(f)
+        let coords = { lat: parseFloat(f[latCol].v), lng: parseFloat(f[lngCol].v) };
+        console.log('Initializing the point with coords:')
+        console.log(coords)
+        heatMapData.push(new google.maps.LatLng(coords));
+        // let lngLat = new google.maps.LatLng(coords.long,coords.lat);
+        // console.log(lngLat)
+        // heatMapData.push(lngLat);
+      }
+      // Initialize with heatMapData
+      heatmap = new google.maps.visualization.HeatmapLayer({
+        data: heatMapData,
+        maxIntensity: 20
+      });
+      console.log('Looking at heatmap data:')
+      console.log(heatmap)
+      toggleHeatmap();
     }
-    for (let i = 0; i < rows.length; i++) {
-      let f = rows[i].f;
-      let coords = { lat: parseFloat(f[latCol].v), lng: parseFloat(f[lngCol].v) };
-      let latLng = new google.maps.LatLng(coords);
-      heatmapData.push(latLng);
+    else{
+      console.log('No object heatMapData available')
     }
-    heatmap = new google.maps.visualization.HeatmapLayer({
-      data: heatmapData,
-      map: map,
-      maxIntensity: 20
-    });
+  }
+
+  function toggleHeatmap() {
     heatmap.setMap(heatmap.getMap() ? null : map);
+  }
+
+  //toggle the opacity of an HTML element to make it appear/disappear
+  function fadeToggle(obj){
+    if(obj.style.opacity==1){
+      obj.style.opacity = 0;
+      setTimeout(() => {
+        obj.style.zIndex = -1000;
+      }, 1000);
+    } else {
+      obj.style.zIndex = 1000;
+      obj.style.opacity = 1;
+    }
   }
 
   function updateStatus(response){
@@ -465,18 +502,6 @@ function onClientLoad() {
     if(response.totalBytesProcessed){
       let bytesTd = document.getElementById("bytes");
       bytesTd.innerHTML = (response.totalBytesProcessed/1073741824) + ' GB';
-    }
-  }
-  //toggle the opacity of an HTML element to make it appear/disappear
-  function fadeToggle(obj){
-    if(obj.style.opacity==1){
-      obj.style.opacity = 0;
-      setTimeout(() => {
-        obj.style.zIndex = -1000;
-      }, 1000);
-    } else {
-      obj.style.zIndex = 1000;
-      obj.style.opacity = 1;
     }
   }
 } //onClientLoad
