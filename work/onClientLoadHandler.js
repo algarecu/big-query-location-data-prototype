@@ -434,15 +434,19 @@ function onClientLoad() {
     return queryString;
   }
 
+  function toggleHeatmap() {
+    heatmap.setMap(heatmap.getMap() ? null : map);
+  }
+
   // Helper: shows query results as a Heatmap.
   function doHeatMap(rows){
     let latCol = 0;
     let lngCol = 1;
     let heatMapData = [];
 
-    if (heatmap!=null){
-        heatmap.setMap(null);
-      }
+    // if (heatmap!=null){
+    //     heatmap.setMap(null);
+    //   }
 
     if (rows!=null){
       for (let i = 0; i < rows.length; i++) {
@@ -468,10 +472,6 @@ function onClientLoad() {
     else{
       console.log('No object heatMapData available')
     }
-  }
-
-  function toggleHeatmap() {
-    heatmap.setMap(heatmap.getMap() ? null : map);
   }
 
   //toggle the opacity of an HTML element to make it appear/disappear
