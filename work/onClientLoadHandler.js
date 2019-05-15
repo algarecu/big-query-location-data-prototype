@@ -1,9 +1,9 @@
 // Client the clientId for authentication and scopes
-let clientId = '863290055689-imtgtaa3ienjiq5viagt3iuv6pb1mjco.apps.googleusercontent.com';
+let clientId = 'YOUR CLIENT ID';
 let scope = 'https://www.googleapis.com/auth/bigquery';
 
 // BigQuery settings. Replace these with your project, dataset and table names.
-let gcpProjectId = 'location-geodb';
+let gcpProjectId = 'YOUR PROJECT ID';
 let bigQueryProjectId = 'bigquery-public-data';
 let datasetId = 'openaq';
 let tableName = 'global_air_quality';
@@ -447,19 +447,6 @@ function onClientLoad() {
     }
     else{
       console.log('No object heatMapData available')
-    }
-  }
-
-  //toggle the opacity of an HTML element to make it appear/disappear
-  function fadeToggle(obj){
-    if(obj.style.opacity==1){
-      obj.style.opacity = 0;
-      setTimeout(() => {
-        obj.style.zIndex = -1000;
-      }, 1000);
-    } else {
-      obj.style.zIndex = 1000;
-      obj.style.opacity = 1;
     }
   }
 
