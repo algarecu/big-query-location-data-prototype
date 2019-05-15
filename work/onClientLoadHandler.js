@@ -19,7 +19,7 @@ let config = {
     'scope': scope
 };
 
-// Load functions
+// Start of onClientLoad
 function onClientLoad() {
 
   function loadBigQuery() {
@@ -293,15 +293,11 @@ function onClientLoad() {
 
     // Handle the drawing events.
     drawingManager.addListener('rectanglecomplete', rectangle => {
-      //show an animation to indicate that something is happening.
-      // fadeToggle(document.getElementById('spinner'));
       gapi.auth.authorize(config, function() {
         rectangleQuery(rectangle.getBounds());
       });
     });
     drawingManager.addListener('circlecomplete', circle => {
-      //show an animation to indicate that something is happening.
-      // fadeToggle(document.getElementById('spinner'));
       gapi.auth.authorize(config, function() {
         circleQuery(circle);
       });
@@ -311,23 +307,10 @@ function onClientLoad() {
       let queryPolygon = path.map(function(element) {
         return [element.lng(), element.lat()];
       });
-      //show an animation to indicate that something is happening.
-      // fadeToggle(document.getElementById('spinner'));
       gapi.auth.authorize(config, function() {
         polygonQuery(queryPolygon);
         });
     });
-    // drawingManager.addListener('polygoncomplete', polygon => {
-    //   let path = polygon.getPath().getArray(0);
-    //   let queryPolygon = path.map(element => {
-    //     return [element.lng(), element.lat()];
-    //   });
-    //   //show an animation to indicate that something is happening.
-    //   fadeToggle(document.getElementById('spinner'));
-    //   gapi.auth.authorize(config, function() {
-    //     polygonQuery(queryPolygon);
-    //   });
-    // });
   }
 
   // Query related functions:
@@ -404,7 +387,7 @@ function onClientLoad() {
   }
 
   //Build a BigQuery User Defined Function based SQL Query
-  //This uses Standard SQL - see map_legacySql.html for a version that uses BigQuery Legacy SQL
+  //This uses Standard SQL
   function polygonSQL(poly){
     let queryString = 'CREATE TEMPORARY FUNCTION pointInPolygon(latitude FLOAT64, longitude FLOAT64) ';
     queryString += 'RETURNS BOOL LANGUAGE js AS """ ';
@@ -444,10 +427,6 @@ function onClientLoad() {
     let lngCol = 1;
     let heatMapData = [];
 
-    // if (heatmap!=null){
-    //     heatmap.setMap(null);
-    //   }
-
     if (rows!=null){
       for (let i = 0; i < rows.length; i++) {
         let f = rows[i].f;
@@ -456,9 +435,6 @@ function onClientLoad() {
         console.log('Initializing the point with coords:')
         console.log(coords)
         heatMapData.push(new google.maps.LatLng(coords));
-        // let lngLat = new google.maps.LatLng(coords.long,coords.lat);
-        // console.log(lngLat)
-        // heatMapData.push(lngLat);
       }
       // Initialize with heatMapData
       heatmap = new google.maps.visualization.HeatmapLayer({
@@ -504,4 +480,4 @@ function onClientLoad() {
       bytesTd.innerHTML = (response.totalBytesProcessed/1073741824) + ' GB';
     }
   }
-} //onClientLoad
+} // End of onClientLoad
