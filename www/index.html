@@ -2,6 +2,7 @@
 <html>
 <head>
   <script src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <!-- <script src="https://apis.google.com/js/platform.js" async defer></script> -->
   <title>Locations Map</title>
   <meta name="viewport" content="initial-scale=1.0">
   <meta charset="utf-8">
@@ -33,7 +34,7 @@
   <script type="text/javascript">
   // setup
   let config = {
-      'clientId': 'YOUR CLIENT ID',
+      'clientId': 'YOURCLIENTID',
       'scopes': 'https://www.googleapis.com/auth/bigquery'
     };
   // function to load client side code
@@ -80,10 +81,8 @@
     </div>
   </div>
   <!-- MENU END -->
-  <!-- <script src=""
-  async defer></script> -->
   <script src="https://apis.google.com/js/client.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?libraries=visualization,drawing&callback=onClientLoadHandler&key=YOURMAPSKEY"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?libraries=visualization,drawing&callback=onClientLoadHandler&key=YOURKEY" async defer></script>
   <script type="text/javascript">
     gapi.load('client:auth', authorize);
   </script>
