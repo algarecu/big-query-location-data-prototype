@@ -1,9 +1,9 @@
 // Client the clientId for authentication and scopes
-let clientId = 'YOUR CLIENT ID';
+let clientId = 'YOURCLIENTID';
 let scope = 'https://www.googleapis.com/auth/bigquery';
 
 // BigQuery settings. Replace these with your project, dataset and table names.
-let gcpProjectId = 'YOUR PROJECT ID';
+let gcpProjectId = 'location-geodb';
 let bigQueryProjectId = 'bigquery-public-data';
 let datasetId = 'openaq';
 let tableName = 'global_air_quality';
@@ -21,7 +21,6 @@ let config = {
 
 // Start of onClientLoad
 function onClientLoad() {
-
   function loadBigQuery() {
     gapi.client.load('bigquery', 'v2');
     setTimeout(function() {
@@ -47,6 +46,25 @@ function onClientLoad() {
   }
   loadApi();
 
+  // Update stats
+  function updateStatus(response){
+    if(response.statistics){
+      let durationMs = response.statistics.endTime - response.statistics.startTime;
+      let durationS = durationMs/1000;
+      let suffix = (durationS ==1) ? '':'s';
+      let durationTd = document.getElementById("duration");
+      durationTd.innerHTML = durationS + ' second' + suffix;
+    }
+    if(response.totalRows){
+      let rowsTd = document.getElementById("rowCount");
+      rowsTd.innerHTML = response.totalRows;
+    }
+    if(response.totalBytesProcessed){
+      let bytesTd = document.getElementById("bytes");
+      bytesTd.innerHTML = (response.totalBytesProcessed/1073741824) + ' GB';
+    }
+  }
+
   // Send a query to API
   function sendQuery(queryString){
     console.log('Sending query with:')
@@ -69,6 +87,8 @@ function onClientLoad() {
       'jobId': jobId
     });
     request.execute(response => {
+      // Show progress to the user
+      updateStatus(response);
       if (response.status.errorResult){
         // Handle any errors
         console.log(response.status.error);
@@ -93,6 +113,8 @@ function onClientLoad() {
     });
     console.log(jobId);
     request.execute(response => doHeatMap(response.result.rows))
+    // update status
+    updateStatus(response);
   }
   // Init map
   function initMap() {
@@ -447,24 +469,6 @@ function onClientLoad() {
     }
     else{
       console.log('No object heatMapData available')
-    }
-  }
-
-  function updateStatus(response){
-    if(response.statistics){
-      let durationMs = response.statistics.endTime - response.statistics.startTime;
-      let durationS = durationMs/1000;
-      let suffix = (durationS ==1) ? '':'s';
-      let durationTd = document.getElementById("duration");
-      durationTd.innerHTML = durationS + ' second' + suffix;
-    }
-    if(response.totalRows){
-      let rowsTd = document.getElementById("rowCount");
-      rowsTd.innerHTML = response.totalRows;
-    }
-    if(response.totalBytesProcessed){
-      let bytesTd = document.getElementById("bytes");
-      bytesTd.innerHTML = (response.totalBytesProcessed/1073741824) + ' GB';
     }
   }
 } // End of onClientLoad
