@@ -11,3 +11,6 @@ Requirements:
 Results: you will get your input rendered automatically by Google JS Maps and sent to the BigQuery API backend.
 
 ![Polygon Big Query with air quality dataset in France](img/polygon-input-query.png)
+
+Testing it:
+https://location-geodb.appspot.com/
