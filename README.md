@@ -3,7 +3,7 @@ A Big Query project that displays location data on a map and uses SQL queries, u
 
 Requirements:
 - Clone this repo.
-- Create some Google credentials and insert them in the clienID and Key fields of the code (YOUR_MAPS_KEY, YOUR_CLIENT_ID)
+- Create some Google credentials within your organization (only works with internal credentials) and insert them in the clienID and Key fields of the code (YOUR_MAPS_KEY, YOUR_CLIENT_ID)
 - Create or select a project on Google Cloud Platform.
 - Deploy app.yaml with: gcloud app deploy app.yaml --project PROJECT-NAME --version VERSION-NAME
 - Enjoy!
